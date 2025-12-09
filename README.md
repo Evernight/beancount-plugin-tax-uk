@@ -121,6 +121,10 @@ The ```UK Taxes``` link should appear in the Fava interface.
 ### Using with Lazy Beancount
 
 [Lazy Beancount](https://github.com/Evernight/lazy-beancount/) contains set of plugins that make keeping track of your investments and other financial operations easier.
+This plugin is included in the ```extra``` build on Docker Hub:
+```
+docker pull vandereer/lazy-beancount:extra
+```
 
 ## Verification and tests
 
