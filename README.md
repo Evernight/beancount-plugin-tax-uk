@@ -16,7 +16,7 @@ This plugin helps calculate UK capital gains tax and generate reports for:
 * ✅ Multiple currencies with tax report generated using HMRC or Beancount exchange rates
 * ✅ Stock splits
 * ✅ Excess reportable income (for accumulation funds)
-* ❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked discussion)
+* ❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked [discussion](https://github.com/mattjgalloway/cgtcalc/issues/15))
 * ❌ Showing allowances and actual tax liability (only calculates gains and losses)
 * ❌ Any old tax rules, e.g transactions before 6th April 2008
 
@@ -35,6 +35,12 @@ Install the plugin:
 ```bash
 pip install git+https://github.com/Evernight/beancount-plugin-tax-uk
 ```
+and enable it in the ledger:
+
+```beancount
+plugin "beancount_plugin_tax_uk.fava_extension"
+```
+
 You'll also need to add some metadata to your transactions to make it work.
 
 ### Transaction types
@@ -71,7 +77,7 @@ You can start Fava with multiple ledgers available via a dropdown selector using
 
 ### Optional plugin configuration
 
-Plugin is designed to work out of the box without additional configuration when you add the corresponding tags to your transactions. However you may want to adjust its behaviour to adapt it for your Beancount ledger structure and naming conventions.
+Plugin is designed to work out of the box without additional configuration when you add the corresponding tags to your transactions. However you may want to adjust its behaviour to adapt it to your Beancount ledger structure and naming conventions.
 
 ```beancount
 ; Map account name to a descriptive shortname of a platform and default asset type
@@ -84,7 +90,7 @@ Plugin is designed to work out of the box without additional configuration when 
 2000-01-01 custom "uk-tax-asset-mapping" "VWRL" "VG FTSE All-World" "Stocks"
 2000-01-01 custom "uk-tax-asset-mapping" "ETH" "Ethereum" "Crypto"
 
-; Asset type can be "Stocks" or "Crypto"
+; <asset_type> can be "Stocks" or "Crypto"
 
 ; Additional configuration for special account treatment
 2000-01-01 custom "uk-tax-config" "commission-account" "^Expenses:.*:Commissions"
@@ -107,7 +113,7 @@ For Fava integration, add the following line to your Beancount file:
 plugin "beancount_plugin_tax_uk.fava_extension"
 ```
 
-The ```UK Tax``` link should appear in the Fava interface.
+The ```UK Taxes``` link should appear in the Fava interface.
 
 ### Using with Lazy Beancount
 
@@ -129,7 +135,7 @@ Note differences in the test results mentioned [on the tests README page](tests/
 
 If you have more test cases to contribute, particularly if the results are verified/confirmed in some way and/or contain some cases not covered by the current tests, please share.
 
-## What about other countries?
+## Other countries
 
 This plugin is designed to work with UK tax rules (even for that case, see the disclaimer above). However, few other countries have similar rules, e.g. in handling capital gains using average cost basis. If you're interested in adapting the plugin, feel free to open an issue, submit a pull request or even fork repository in case implementing these is not generalisable or requires too many changes.
 
