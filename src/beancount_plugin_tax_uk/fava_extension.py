@@ -1,11 +1,12 @@
 """Fava extension for UK Capital Gains Tax calculations."""
 
 from typing import List, Dict, Any, Tuple
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from decimal import Decimal
 from fava.ext import extension_endpoint
 import tempfile
 import os
+import datetime
 
 import pandas as pd
 from fava.ext import FavaExtensionBase
@@ -109,6 +110,29 @@ class UKTaxPlugin(FavaExtensionBase):
 
         return dict(events)
 
+    def convert_row_for_template(self, row: OrderedDict) -> Dict[str, Any]:
+        """Convert a row from the tax report to a format suitable for the template.
+        
+        Args:
+            row: OrderedDict containing row data
+            
+        Returns:
+            Dictionary with serialized values (datetime to string, Decimal to float)
+        """
+        converted = {}
+        for key, value in row.items():
+            if isinstance(value, datetime.datetime):
+                converted[key] = value.strftime("%Y-%m-%d")
+            elif isinstance(value, Decimal):
+                converted[key] = float(value)
+            elif value is None:
+                converted[key] = ""
+            elif isinstance(value, str) and value == "":
+                converted[key] = ""
+            else:
+                converted[key] = value
+        return converted
+
     def tax_report(self) -> Dict[str, Any]:
         """Generate the tax report data for the template.
 
@@ -124,12 +148,15 @@ class UKTaxPlugin(FavaExtensionBase):
         rate_converter = BeancountRateConverter(self.ledger.all_entries)
 
         # Generate tax report data
-        _, tax_res, asset_type_mapping = generate_tax_report(
+        rows, tax_res, asset_type_mapping = generate_tax_report(
             self.ledger.all_entries,
             tax_related_events,
             rate_converter=rate_converter,
             verbose=False,
         )
+
+        # Convert rows to template-friendly format
+        converted_rows = [self.convert_row_for_template(row) for row in rows]
 
         if tax_res.empty:
             return {
@@ -137,6 +164,7 @@ class UKTaxPlugin(FavaExtensionBase):
                 "summaries": {},
                 "events": {},
                 "groups": [],
+                "rows": converted_rows,
             }
 
         # Build report data for each year
@@ -149,6 +177,7 @@ class UKTaxPlugin(FavaExtensionBase):
             "groups": sorted(
                 [g.value for g in TaxableGainGroup]
             ),  # Add list of all groups
+            "rows": converted_rows,
         }
 
         for year in years:

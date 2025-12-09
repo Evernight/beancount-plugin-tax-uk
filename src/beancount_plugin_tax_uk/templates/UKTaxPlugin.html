@@ -93,6 +93,78 @@
             {% endfor %}
         </div>
         {% endfor %}
+
+        {% if report.rows %}
+        <div class="detailed-rows-section">
+            <h2>Detailed Transaction Rows</h2>
+            <div class="rows-container">
+                <table class="table rows-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Asset</th>
+                            <th>Platform</th>
+                            <th>Event</th>
+                            <th>Rule</th>
+                            <th>Currency</th>
+                            <th>Buy Quantity</th>
+                            <th>Buy Price</th>
+                            <th>Buy Value (Currency)</th>
+                            <th>Buy Value (GBP)</th>
+                            <th>Sell Quantity</th>
+                            <th>Sell Price</th>
+                            <th>Sell Value (Currency)</th>
+                            <th>Sell Value (GBP)</th>
+                            <th>Fee Value (Currency)</th>
+                            <th>Total Shares in Pool</th>
+                            <th>Total Cost in Pool</th>
+                            <th>Allowable Cost</th>
+                            <th>Chargeable Gain</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report.rows %}
+                            {% if row.get('Year (int)') %}
+                            <tr class="year-divider-row">
+                                <td colspan="19"><strong>Summary for tax year ending {{ row.get('Year end', '') }}</strong></td>
+                            </tr>
+                            {% elif row.get('Next year') %}
+                            <tr class="year-divider-row">
+                                <td colspan="19"><strong>Tax year: {{ row.get('Next year', '') }}</strong></td>
+                            </tr>
+                            {% elif row.get('AssetSection') %}
+                            <tr class="asset-divider-row">
+                                <td colspan="19"><strong>Asset: {{ row.get('AssetSection', '') }}</strong></td>
+                            </tr>
+                            {% elif row.get('Date') or row.get('Event') %}
+                            <tr class="{% if row.get('Event') == 'Sell' %}sell-row{% endif %}">
+                                <td>{% if row.get('Date') %}<a href="../../journal/?time={{ row.get('Date') }}">{{ row.get('Date', '') }}</a>{% else %}&nbsp;{% endif %}</td>
+                                <td>{{ row.get('Asset', '') or ' ' }}</td>
+                                <td>{{ row.get('Platform', '') or ' ' }}</td>
+                                <td>{{ row.get('Event', '') or ' ' }}</td>
+                                <td>{{ row.get('Rule', '') or ' ' }}</td>
+                                <td>{{ row.get('Currency', '') or ' ' }}</td>
+                                <td class="num">{% set buy_qty = row.get('Buy Quantity') %}{% if buy_qty is not none and buy_qty != '' %}{{ buy_qty }}{% else %} {% endif %}</td>
+                                <td class="num">{% set buy_price = row.get('Buy Price') %}{% if buy_price is not none and buy_price != '' %}{{ "{:,.2f}".format(buy_price) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set buy_val_curr = row.get('Buy Value in Currency') %}{% if buy_val_curr is not none and buy_val_curr != '' %}{{ "{:,.2f}".format(buy_val_curr) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set buy_val_gbp = row.get('Buy Value in GBP') %}{% if buy_val_gbp is not none and buy_val_gbp != '' %}£{{ "{:,.2f}".format(buy_val_gbp) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set sell_qty = row.get('Sell Quantity') %}{% if sell_qty is not none and sell_qty != '' %}{{ sell_qty }}{% else %} {% endif %}</td>
+                                <td class="num">{% set sell_price = row.get('Sell Price') %}{% if sell_price is not none and sell_price != '' %}{{ "{:,.2f}".format(sell_price) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set sell_val_curr = row.get('Sell Value in Currency') %}{% if sell_val_curr is not none and sell_val_curr != '' %}{{ "{:,.2f}".format(sell_val_curr) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set sell_val_gbp = row.get('Sell Value in GBP') %}{% if sell_val_gbp is not none and sell_val_gbp != '' %}£{{ "{:,.2f}".format(sell_val_gbp) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set fee_val = row.get('Fee Value in Currency') %}{% if fee_val is not none and fee_val != '' %}{{ "{:,.2f}".format(fee_val) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set total_shares = row.get('Total shares in pool') %}{% if total_shares is not none and total_shares != '' %}{{ "{:,.2f}".format(total_shares) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set total_cost = row.get('Total cost in pool') %}{% if total_cost is not none and total_cost != '' %}£{{ "{:,.2f}".format(total_cost) }}{% else %} {% endif %}</td>
+                                <td class="num">{% set allowable = row.get('Allowable cost') %}{% if allowable is not none and allowable != '' %}£{{ "{:,.2f}".format(allowable) }}{% else %} {% endif %}</td>
+                                <td class="num {% set cg = row.get('Chargeable gain') %}{% if cg is not none %}{% if cg >= 0 %}gain{% else %}loss{% endif %}{% endif %}">{% if cg is not none and cg != '' %}£{{ "{:,.2f}".format(cg) }}{% else %} {% endif %}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
     {% else %}
         <p>No relevant transactions found in the ledger.</p>
     {% endif %}
@@ -220,6 +292,60 @@ table.table th {
 
 a.button:visited {
     color: #ffffff;
+}
+
+.detailed-rows-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 3px solid #666;
+}
+
+.detailed-rows-section h2 {
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #666;
+}
+
+.rows-container {
+    overflow-x: auto;
+}
+
+.rows-table {
+    font-size: 0.85rem;
+    min-width: 100%;
+}
+
+.rows-table th {
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background-color: #f5f5f5;
+    z-index: 10;
+}
+
+.year-divider-row {
+    background-color: #add8e6;
+    font-weight: bold;
+}
+
+.year-divider-row td {
+    padding: 0.75rem;
+    border-top: 2px solid #666;
+    border-bottom: 2px solid #666;
+}
+
+.asset-divider-row {
+    background-color: #d9ead3;
+    font-weight: bold;
+}
+
+.asset-divider-row td {
+    padding: 0.75rem;
+    border-top: 1px solid #999;
+}
+
+.sell-row {
+    background-color: #fff2cc;
 }
 
 </style>
