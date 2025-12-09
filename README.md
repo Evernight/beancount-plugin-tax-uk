@@ -73,7 +73,10 @@ Example transactions:
 ```
 
 More examples are available as ```beancount``` files in the [test data folder](tests/data).
-You can start Fava with multiple ledgers available via a dropdown selector using ```show_tests_in_fava.sh``` script.
+You can start Fava with multiple ledgers available via a dropdown selector with:
+```
+make show-tests
+```
 
 ### Optional plugin configuration
 
@@ -124,7 +127,7 @@ The ```UK Taxes``` link should appear in the Fava interface.
 Obviously, correctness of the results is very much desired. Relevant references to HMRC resources inserted in code where appropriate. Some end-to-end tests are provided taken from various sources.
 I found https://github.com/mattjgalloway/cgtcalc to have the most structured test suite, kudos to the author of the tool. Of course, before starting to treat these as a source of truth, refer to the disclaimer and discussions in that repository as well.
 
-Nevertheless, this repository contains a simple parser from ```cgtcalc```'s format into Beancount file, and the test case inputs converted accordingly. To compare outputs with ```cgtcalc```'s expected output you'd have to compare ```xlsx``` reports with ```txt``` files manually, or alternatively run ```show_tests_in_fava.sh``` and compare outputs with reports from ```cgtcalc```.
+Nevertheless, this repository contains a simple parser from ```cgtcalc```'s format into Beancount file, and the test case inputs converted accordingly. To compare outputs with ```cgtcalc```'s expected output you'd have to compare ```xlsx``` reports with ```txt``` files manually, or alternatively run ```show_tests_in_fava.sh``` (```make show-tests```) and compare outputs with reports from ```cgtcalc```.
 Note that at this point while some cases are treated identically, there are a few observed differences (that may be fixed in future).
 
 ```bash

@@ -35,3 +35,7 @@ init-dev:
 clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf build/ dist/ *.egg-info/ 
+
+show-tests:
+	@echo "Showing tests in Fava..."
+	cd tests && ./show_tests_in_fava.sh
