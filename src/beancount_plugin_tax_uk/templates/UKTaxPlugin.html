@@ -120,6 +120,7 @@
                             <th>Total Cost in Pool</th>
                             <th>Allowable Cost</th>
                             <th>Chargeable Gain</th>
+                            <th>Comment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -157,6 +158,7 @@
                                 <td class="num">{% set total_cost = row.get('Total cost in pool') %}{% if total_cost is not none and total_cost != '' %}£{{ "{:,.2f}".format(total_cost) }}{% else %} {% endif %}</td>
                                 <td class="num">{% set allowable = row.get('Allowable cost') %}{% if allowable is not none and allowable != '' %}£{{ "{:,.2f}".format(allowable) }}{% else %} {% endif %}</td>
                                 <td class="num {% set cg = row.get('Chargeable gain') %}{% if cg is not none %}{% if cg >= 0 %}gain{% else %}loss{% endif %}{% endif %}">{% if cg is not none and cg != '' %}£{{ "{:,.2f}".format(cg) }}{% else %} {% endif %}</td>
+                                <td>{{ row.get('Comment', '') or ' ' }}</td>
                             </tr>
                             {% endif %}
                         {% endfor %}
@@ -345,7 +347,7 @@ a.button:visited {
 }
 
 .sell-row {
-    background-color: #fff2cc;
+    background-color: #fff2cc !important;
 }
 
 </style>

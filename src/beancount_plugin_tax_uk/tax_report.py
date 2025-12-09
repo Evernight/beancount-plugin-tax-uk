@@ -597,6 +597,8 @@ def generate_tax_report(
 
                     r["Allowable cost"] = buy_value_gbp
 
+                    r["Comment"] = f"Matched with {match_quantity * stock_split_multiplier} shares on {get_date_datetime(int(buy_transaction.timestamp) / 1000).date()}"
+
                 r["Chargeable gain"] = (
                     r["Sell Value in GBP"] - r["Allowable cost"] - fee_in_gbp
                 )

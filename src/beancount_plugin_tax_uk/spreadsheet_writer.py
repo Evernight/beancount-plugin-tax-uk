@@ -219,6 +219,8 @@ def write_tax_report_spreadsheet(
                     value = value.strftime("%d/%m/%Y")
 
                 # Find key index in SPREADSHEET_COLUMNS
+                if key not in SPREADSHEET_COLUMNS:
+                    continue
                 col_ind = list(SPREADSHEET_COLUMNS.keys()).index(key)
                 currency = r["Currency"]
 
