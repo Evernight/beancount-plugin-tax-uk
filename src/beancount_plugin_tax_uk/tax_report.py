@@ -112,12 +112,11 @@ def match_transactions(
         f"Remaining Buy: {tr_list[j].remaining_quantity - matched_quantity * stock_split_multiplier}\n"
     )
 
-    tr_list[i].matched.append((j, matched_quantity, rule))
-    tr_list[j].matched.append((i, matched_quantity * stock_split_multiplier, rule))
+    tr_list[i].matched.append((j, matched_quantity, rule, stock_split_multiplier))
+    tr_list[j].matched.append((i, matched_quantity * stock_split_multiplier, rule, stock_split_multiplier))
 
     tr_list[i].remaining_quantity -= matched_quantity
     tr_list[j].remaining_quantity -= matched_quantity * stock_split_multiplier
-
 
 def generate_matches(
     input_transactions_list: List[TaxRelatedEventWithMatches],
@@ -202,7 +201,7 @@ def generate_matches(
     for i, item in enumerate(transactions_list):
         if item.remaining_quantity >= EPS or not item.matched:
             # Create items even for types of operations where Quantity = 0
-            item.matched.append((i, item.remaining_quantity, TaxRule.SECTION_104.value))
+            item.matched.append((i, item.remaining_quantity, TaxRule.SECTION_104.value, Decimal(1.0)))
             item.remaining_quantity = 0
 
     return transactions_list
@@ -341,7 +340,7 @@ def generate_tax_report(
         for match_index, match in enumerate(
             item.matched
         ):  # Debug output for current item
-            matched_row_index, match_quantity, match_rule = match
+            matched_row_index, match_quantity, match_rule, stock_split_multiplier = match
             cur_datetime = datetime.datetime.fromtimestamp(int(item.timestamp) / 1000)
 
             if verbose:
@@ -589,7 +588,7 @@ def generate_tax_report(
                         print(f"r={r}")
                 else:
                     buy_transaction = transactions_with_matches[matched_row_index]
-                    buy_value = Decimal(buy_transaction.price) * Decimal(match_quantity)
+                    buy_value = Decimal(buy_transaction.price) * Decimal(match_quantity) * Decimal(stock_split_multiplier)
                     buy_ts = int(buy_transaction.timestamp) / 1000
                     buy_rate = rate_converter.get_rate(buy_ts, buy_transaction.currency)
                     buy_value_gbp = (
