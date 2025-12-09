@@ -6,22 +6,19 @@ A plugin for [Beancount](https://beancount.github.io/) that generates United Kin
 
 **This software is provided "as is" without warranty of any kind. The author is neither an accountant nor a finance specialist. Please verify all calculations and consult with a qualified tax professional. This tool is meant to assist with tax calculations but should not be solely relied upon for tax filing purposes.**
 
-> \[!WARNING]
->
-> For now there are some edge cases where the plugin is known to provide an incorrect result. Read for details on verification [below](README.md#verification-and-tests). However, it is supposed to work for straightforward general cases.
-
 ## Functionality
 
 This plugin helps calculate UK capital gains tax and generate reports for:
 
-* [x] Capital gains calculations including handling of Section 104 holding, Bed & Breakfast, and Same Day rules
-* [x] Supporting generic case for various asset types (stocks, crypto, etc.),  platforms, and common event types
-* [x] Dividend income and other investment income
-* [x] Multiple currencies with tax report generated using HMRC or Beancount exchange rates
-* [ ] Stock splits (does not handle some cases yet)
-* [ ] Equalisation payments (not clear on exact rules)
-* [ ] Showing allowances and actual tax liability (only calculating gains and losses)
-* [ ] Any old tax rules, e.g transactions before 6th April 2008
+✅ Capital gains calculations including handling of Section 104 holding, Bed & Breakfast, and Same Day rules
+✅ Supporting generic case for various asset types (stocks, crypto, etc.),  platforms, and common event types
+✅ Dividend income and other investment income
+✅ Multiple currencies with tax report generated using HMRC or Beancount exchange rates
+✅ Stock splits
+✅ Excess reportable income (for accumulation funds)
+❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked discussion)
+❌ Showing allowances and actual tax liability (only calculates gains and losses)
+❌ Any old tax rules, e.g transactions before 6th April 2008
 
 ## Available as
 * A command-line tool to generate Excel reports
@@ -78,12 +75,16 @@ Plugin is designed to work out of the box without additional configuration when 
 
 ```beancount
 ; Map account name to a descriptive shortname of a platform and default asset type
+; 2000-01-01 custom "uk-tax-platform-mapping" <pattern> <platform> [<asset_type>]
 2000-01-01 custom "uk-tax-platform-mapping" "Assets:SomeBroker:.*" "Broker123" "Stocks"
 2000-01-01 custom "uk-tax-platform-mapping" "Assets:SomeCryptoPlatform:.*" "SomeCryptoPlatform" "Crypto"
 
 ; Map Beancount commodities to name and asset class used in the report
+; 2000-01-01 custom "uk-tax-asset-mapping" <symbol> <mapped name> [<asset_type>]
 2000-01-01 custom "uk-tax-asset-mapping" "VWRL" "VG FTSE All-World" "Stocks"
 2000-01-01 custom "uk-tax-asset-mapping" "ETH" "Ethereum" "Crypto"
+
+; Asset type can be "Stocks" or "Crypto"
 
 ; Additional configuration for special account treatment
 2000-01-01 custom "uk-tax-config" "commission-account" "^Expenses:.*:Commissions"
@@ -107,6 +108,10 @@ plugin "beancount_plugin_tax_uk.fava_extension"
 ```
 
 The ```UK Tax``` link should appear in the Fava interface.
+
+### Using with Lazy Beancount
+
+[Lazy Beancount](https://github.com/Evernight/lazy-beancount/) contains set of plugins that make keeping track of your investments and other financial operations easier.
 
 ## Verification and tests
 

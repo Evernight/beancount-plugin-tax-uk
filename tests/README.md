@@ -16,7 +16,7 @@ Test status for tests adapted from https://github.com/mattjgalloway/cgtcalc/tree
 | WithAssetEventsBB | ✅ |  |
 | WithAssetEventsMultipleYears | ✅ |  |
 | WithAssetEventsSameDay | ✅ |  |
-| WithSplitBB | ❌ | Split for Bed&Breakfast case not handled yet |
-| WithSplitS104 | ❌ | Split handling not guaranteed to be fully implemented yet |
+| WithSplitBB | ✅ | |
+| WithSplitS104 | ✅ | |
 | WithUnsplitBB | ❌ | Split handling not guaranteed to be fully implemented yet |
 | WithUnsplitS104 | ❌ | Split handling not guaranteed to be fully implemented yet |
