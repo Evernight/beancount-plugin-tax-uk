@@ -38,7 +38,8 @@ option "operating_currency" "GBP"
   Assets:Cash    -100 GBP
 
 2019-02-15 * "Stock split FOO 0.5:1" #stock_split
-  Assets:Stocks  0 FOO
+  Assets:Stocks  -10 FOO {10 GBP}
+  Assets:Stocks  5 FOO {20 GBP}
 
 2019-02-20 * "Buy FOO" #buy
   Assets:Stocks     5 FOO {20 GBP}

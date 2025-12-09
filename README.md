@@ -10,15 +10,15 @@ A plugin for [Beancount](https://beancount.github.io/) that generates United Kin
 
 This plugin helps calculate UK capital gains tax and generate reports for:
 
-✅ Capital gains calculations including handling of Section 104 holding, Bed & Breakfast, and Same Day rules
-✅ Supporting generic case for various asset types (stocks, crypto, etc.),  platforms, and common event types
-✅ Dividend income and other investment income
-✅ Multiple currencies with tax report generated using HMRC or Beancount exchange rates
-✅ Stock splits
-✅ Excess reportable income (for accumulation funds)
-❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked discussion)
-❌ Showing allowances and actual tax liability (only calculates gains and losses)
-❌ Any old tax rules, e.g transactions before 6th April 2008
+* ✅ Capital gains calculations including handling of Section 104 holding, Bed & Breakfast, and Same Day rules
+* ✅ Supporting generic case for various asset types (stocks, crypto, etc.),  platforms, and common event types
+* ✅ Dividend income and other investment income
+* ✅ Multiple currencies with tax report generated using HMRC or Beancount exchange rates
+* ✅ Stock splits
+* ✅ Excess reportable income (for accumulation funds)
+* ❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked discussion)
+* ❌ Showing allowances and actual tax liability (only calculates gains and losses)
+* ❌ Any old tax rules, e.g transactions before 6th April 2008
 
 ## Available as
 * A command-line tool to generate Excel reports

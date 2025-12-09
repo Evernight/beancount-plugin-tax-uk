@@ -84,7 +84,15 @@ from openpyxl.utils import get_column_letter
         pytest.param(
             ("cgtcalc_inputs_beancount/WithSplitS104.beancount", "report_WithSplitS104.xlsx", "report_WithSplitS104.pkl"),
             id="WithSplitS104"
-        )
+        ),
+        pytest.param(
+            ("cgtcalc_inputs_beancount/WithUnsplitBB.beancount", "report_WithUnsplitBB.xlsx", "report_WithUnsplitBB.pkl"),
+            id="WithUnsplitBB"
+        ),
+        pytest.param(
+            ("cgtcalc_inputs_beancount/WithUnsplitS104.beancount", "report_WithUnsplitS104.xlsx", "report_WithUnsplitS104.pkl"),
+            id="WithUnsplitS104"
+        ),
     ],
 )
 def test_tax_report(capture_output, tmp_path, test_files):

@@ -18,5 +18,5 @@ Test status for tests adapted from https://github.com/mattjgalloway/cgtcalc/tree
 | WithAssetEventsSameDay | ✅ |  |
 | WithSplitBB | ✅ | |
 | WithSplitS104 | ✅ | |
-| WithUnsplitBB | ❌ | Split handling not guaranteed to be fully implemented yet |
-| WithUnsplitS104 | ❌ | Split handling not guaranteed to be fully implemented yet |
+| WithUnsplitBB | ✅ |  |
+| WithUnsplitS104 | ✅ |  |
