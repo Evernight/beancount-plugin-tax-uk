@@ -79,7 +79,7 @@ def match_transactions(
     i: int,
     j: int,
     rule: str,
-    stock_splits: List[TaxRelatedEventWithMatches],
+    stock_splits: List[TaxRelatedEventWithMatches], # List of stock splits for the asset
 ) -> None:
     """
     Sell transaction is on i-th position, buy transaction is on j-th position (j > i, so buy is later event)
@@ -87,8 +87,14 @@ def match_transactions(
     This may split buy or sell operations and create new items in the list
     """
 
+    stock_split_multiplier = Decimal(1.0)
+    for stock_split in stock_splits:
+        if tr_list[i].timestamp < stock_split.timestamp < tr_list[j].timestamp:
+            # Stock split is between the sell and buy transactions
+            stock_split_multiplier *= stock_split.quantity # multiplier stored in "quantity" field
+
     item_sq = tr_list[i].remaining_quantity
-    match_bq = tr_list[j].remaining_quantity
+    match_bq = tr_list[j].remaining_quantity / stock_split_multiplier # Normalize to pre-split amount (when sold)
 
     matched_quantity = min(item_sq, match_bq)
 
@@ -101,15 +107,16 @@ def match_transactions(
         f"Type: {tr_list[j].type.value} | Quantity: {tr_list[j].remaining_quantity} | "
         f"Price: {tr_list[j].price} | Platform: {tr_list[j].platform} | "
         f"\nRule: {rule} | Matched Quantity: {matched_quantity} | "
+        f"Stock Split Multiplier: {stock_split_multiplier} | "
         f"Remaining Sell: {tr_list[i].remaining_quantity - matched_quantity} | "
-        f"Remaining Buy: {tr_list[j].remaining_quantity - matched_quantity}\n"
+        f"Remaining Buy: {tr_list[j].remaining_quantity - matched_quantity * stock_split_multiplier}\n"
     )
 
     tr_list[i].matched.append((j, matched_quantity, rule))
-    tr_list[j].matched.append((i, matched_quantity, rule))
+    tr_list[j].matched.append((i, matched_quantity * stock_split_multiplier, rule))
 
     tr_list[i].remaining_quantity -= matched_quantity
-    tr_list[j].remaining_quantity -= matched_quantity
+    tr_list[j].remaining_quantity -= matched_quantity * stock_split_multiplier
 
 
 def generate_matches(
@@ -372,7 +379,7 @@ def generate_tax_report(
                 r["Asset"] = asset
                 r["Platform"] = item.platform
 
-            r["Rule"] = match_rule
+            r["Rule"] = match_rule if item.type != TaxRelatedEventType.STOCK_SPLIT else ""
 
             r["Currency"] = item.currency
 

@@ -409,7 +409,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) != 2:
-        print("Usage: python parser.py <input_file>")
+        print("Usage: python cgtcalc_parser.py <input_file>")
         sys.exit(1)
 
     print(parse_file(sys.argv[1]))

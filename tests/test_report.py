@@ -77,6 +77,14 @@ from openpyxl.utils import get_column_letter
             ("cgtcalc_inputs_beancount/CarryLoss.beancount", "report_CarryLoss.xlsx", "report_CarryLoss.pkl"),
             id="CarryLoss"
         ),
+        pytest.param(
+            ("cgtcalc_inputs_beancount/WithSplitBB.beancount", "report_WithSplitBB.xlsx", "report_WithSplitBB.pkl"),
+            id="WithSplitBB"
+        ),
+        pytest.param(
+            ("cgtcalc_inputs_beancount/WithSplitS104.beancount", "report_WithSplitS104.xlsx", "report_WithSplitS104.pkl"),
+            id="WithSplitS104"
+        )
     ],
 )
 def test_tax_report(capture_output, tmp_path, test_files):
