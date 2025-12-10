@@ -147,8 +147,9 @@ If you have more test cases to contribute, particularly if the results are verif
 This plugin is designed to work with UK tax rules (even for that case, see the disclaimer above). However, few other countries have similar rules, e.g. in handling capital gains using average cost basis. If you're interested in adapting the plugin, feel free to open an issue, submit a pull request or even fork repository in case implementing these is not generalisable or requires too many changes.
 
 ## See also
-A list of projects with similar functionality or just potentially useful:
-* 🪙 [Evernight/lazy-beancount](https://github.com/Evernight/lazy-beancount) - Beancount pre-packaged in Docker with plugins, in case you're just starting with Beancount or want to upgrade your experience
+* 🪙 [Evernight/lazy-beancount](https://github.com/Evernight/lazy-beancount) - Beancount pre-packaged in Docker with plugins, in case you're just starting with Beancount or want to upgrade your experience. Includes this plugin in ```extra``` package.
+
+And other open source capital gains tax calculators for the UK:
 * 🧮 [mattjgalloway/cgtcalc](https://github.com/mattjgalloway/cgtcalc) - tax reporting for UK from custom format, written in Swift
 * 🧮 [KapJI/capital-gains-calculator](https://github.com/KapJI/capital-gains-calculator) - tax reporting for UK, with few selected platforms supported
 * 🧮 [BittyTax/BittyTax](https://github.com/BittyTax/BittyTax) - tax reporting for UK, only for crypto
