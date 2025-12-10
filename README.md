@@ -1,6 +1,7 @@
 # Beancount Plugin Tax UK
 
-A plugin for [Beancount](https://beancount.github.io/) that generates United Kingdom tax reports for capital gains, dividends and other investment income.
+Capital gains and others tax calculator for UK for investments described in [Beancount](https://github.com/beancount/beancount/) format.
+Implemented as a plugin for Beancount / Fava that generates United Kingdom tax reports for capital gains, dividends and other investment income, exportable as Excel / xls spreadsheet.
 
 ## DISCLAIMER
 
