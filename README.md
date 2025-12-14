@@ -17,9 +17,12 @@ This plugin helps calculate UK capital gains tax and generate reports for:
 * ✅ Multiple currencies with tax report generated using HMRC or Beancount exchange rates
 * ✅ Stock splits
 * ✅ Excess reportable income (for accumulation funds)
-* ❌ Equalisation payments (see [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked [discussion](https://github.com/mattjgalloway/cgtcalc/issues/15))
-* ❌ Showing allowances and actual tax liability (only calculates gains and losses)
+* ⚠️ Equalisation payments
+  > See [tests](https://github.com/Evernight/beancount-plugin-tax-uk/blob/main/tests/README.md) and linked [discussion](https://github.com/mattjgalloway/cgtcalc/issues/15)) for details on possible implementations
+* ❌ Showing allowances and actual tax liability (only calculates gains and losses), filing tax return
+  > Consult with approrpiate year's official resources and maybe even use licensed software for actually sending out the tax return (after checking your data and possibly consulting with specialist)
 * ❌ Any old tax rules, e.g transactions before 6th April 2008
+  > Won't be supported
 
 ## Available as
 * A command-line tool to generate Excel reports
