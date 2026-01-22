@@ -69,8 +69,6 @@ def get_date_datetime(timestamp: int) -> datetime.datetime:
 
 def classify_asset(item: Dict[str, Any]) -> str:
     """Classify an asset based on its type and event type."""
-    if item["asset_type"] == AssetType.CFD.value:
-        return TaxableGainGroup.UNLISTED_SHARES.value
     if item["asset_type"] == AssetType.CRYPTO.value:
         if item["event_type"] == TaxRelatedEventType.INCOME.value:
             return TaxableGainGroup.OTHER_INCOME.value
@@ -155,7 +153,6 @@ def generate_matches(
             if (
                 item.type != TaxRelatedEventType.SELL
                 or item.remaining_quantity < EPS
-                or item.asset_type == AssetType.CFD
             ):
                 i += 1
                 continue
@@ -168,9 +165,6 @@ def generate_matches(
             j = 0
             while j < len(transactions_list):
                 candidate = transactions_list[j]
-                if candidate.asset_type == AssetType.CFD:
-                    j += 1
-                    continue
                 # Should Vest event be matcheable?
                 if (
                     item.asset != candidate.asset
@@ -352,9 +346,6 @@ def generate_tax_report(
         if item.asset_type:
             asset_type_mapping[item.asset] = item.asset_type
 
-        if item.type == TaxRelatedEventType.BUY and item.asset_type == AssetType.CFD:
-            continue
-
         for match_index, match in enumerate(
             item.matched
         ):
@@ -454,40 +445,6 @@ def generate_tax_report(
                             chargeable_gain=r["Buy Value in GBP"],
                         )
                     )
-            elif item.asset_type == AssetType.CFD or item.type in [
-                TaxRelatedEventType.INCOME,
-            ]:
-                # TODO: not sure if this (CFD handling) works correctly
-                r["Sell Quantity"] = Decimal(item.quantity) if item.quantity else ""
-                r["Sell Value in Currency"] = (
-                    item.event.profit_in_currency
-                    if hasattr(item.event, "profit_in_currency")
-                    else None
-                )
-                r["Sell Value in GBP"] = (
-                    r["Sell Value in Currency"] * r["Currency to GBP rate"]
-                    if r["Sell Value in Currency"] is not None
-                    else None
-                )
-                r["Chargeable gain"] = r["Sell Value in GBP"]
-
-                taxable_events[
-                    TaxYearSummaryKey(
-                        tax_year_dividers[current_tax_year_idx].year,
-                        asset,
-                        item.asset_type.value,
-                    )
-                ].append(
-                    TaxableEventInfo(
-                        event_type=item.type.value,
-                        date=cur_datetime,
-                        disposal_proceeds=r["Sell Value in GBP"],
-                        allowable_cost=0,
-                        chargeable_gain=r["Chargeable gain"],
-                    )
-                )
-
-                pool.last_disposal_date = cur_datetime.date()
             elif item.type in [TaxRelatedEventType.ERI]:
                 # Increase the cost basis of the asset
                 r["Buy Value in Currency"] = Decimal(item.price)

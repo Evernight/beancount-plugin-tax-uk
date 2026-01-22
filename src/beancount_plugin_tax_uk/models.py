@@ -8,8 +8,6 @@ from typing import Optional
 class AssetType(Enum):
     CRYPTO = "Crypto"
     STOCKS = "Stocks"
-    # CFD not fully supported
-    CFD = "CFD"
 
 
 class TaxRelatedEventType(Enum):
