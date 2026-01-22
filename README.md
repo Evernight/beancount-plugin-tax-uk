@@ -58,7 +58,7 @@ Tag your transactions with the following to mark them for tax processing:
 * `#dividend` - Dividend income
 * `#interest` - Interest income
 * `#ERI` - Excess reportable income (for accumulation funds)
-* `#rewards_income` - Staking/mining rewards
+* `#taxed_income` - Any other type of taxed income (totals will be aggregated by year for the report)
 
 Only transactions with one of these tags will be considered by the plugin. If you want to tag groups of transactions (e.g. all transactions for a specific account) without manually editing the ledger, I'd recommend using [filter_map](https://github.com/Evernight/beancount-lazy-plugins?tab=readme-ov-file#filter_map) plugin
 

@@ -28,6 +28,7 @@ TAG_TO_TYPE = {
     "sell": TaxRelatedEventType.SELL,
     "vest": TaxRelatedEventType.VEST,
     "stock_split": TaxRelatedEventType.STOCK_SPLIT,
+    "taxed_income": TaxRelatedEventType.INCOME,
     "rewards_income": TaxRelatedEventType.INCOME,
     "inflation_reward": TaxRelatedEventType.INCOME,
     "staking_income": TaxRelatedEventType.INCOME,
