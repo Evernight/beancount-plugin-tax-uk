@@ -1,3 +1,14 @@
+"""
+Tax report generation module.
+
+This module contains the logic for generating the UK CGT tax report.
+The code looks like this (e.g. generating rows with named columns)because it was based around writing a spreadsheet 
+(and historically was migrated from manually maintained spreadsheet)
+
+The spreadsheet rows correspond to taxable events and groupped by tax year.
+Tax years are followed by summary with calculated/aggregated values for the year.
+"""
+
 import copy
 import dataclasses
 import datetime
@@ -20,6 +31,9 @@ from .models import (
 
 
 class AssetPool:
+    """
+    Asset pool for Section 104 tax calculations.
+    """
     def __init__(self):
         self.transactions = []
         self.total_cost = 0
@@ -29,8 +43,11 @@ class AssetPool:
 
 @dataclass
 class TaxableEventInfo:
+    """
+    Structure to store information about a taxable event for further aggregation and reporting
+    """
     event_type: str = ""
-    event_count: int = 1
+    event_count: int = 1 # usually 1, 0 in case it is already counted as part of another event
     date: str = ""
     disposal_proceeds: Decimal = 0
     allowable_cost: Decimal = 0
@@ -320,6 +337,7 @@ def generate_tax_report(
         TaxRelatedEventWithMatches(event=tr) for tr in tax_related_events
     ]
 
+    # Actually match the same day and bed and breakfast transactions with each other
     transactions_with_matches = generate_matches(transactions_with_matches)
 
     # Then generate rows
@@ -339,7 +357,7 @@ def generate_tax_report(
 
         for match_index, match in enumerate(
             item.matched
-        ):  # Debug output for current item
+        ):
             matched_row_index, match_quantity, match_rule, stock_split_multiplier = match
             cur_datetime = datetime.datetime.fromtimestamp(int(item.timestamp) / 1000)
 
@@ -570,9 +588,6 @@ def generate_tax_report(
                     if pool.total_quantity <= 0:
                         # Avoid division by zero
                         assert False, f"ERROR for {item}, empty pool"
-                        # logging.error(f"ERROR for {item}, empty pool")
-                        # r["Allowable cost"] = 0
-                        # r["Error"] = f"ERROR for {item}, empty pool"
                     else:
                         r["Allowable cost"] = (
                             r["Sell Quantity"] / pool.total_quantity * pool.total_cost
