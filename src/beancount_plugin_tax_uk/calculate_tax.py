@@ -39,6 +39,45 @@ TAG_TO_TYPE = {
 }
 
 
+def parse_tag_to_type_option(
+    raw_value: Optional[str],
+) -> Dict[str, Optional[TaxRelatedEventType]]:
+    """Parse the `--tag-to-type` option into a mapping of tags to event types."""
+    if not raw_value:
+        return {}
+    mapping: Dict[str, TaxRelatedEventType] = {}
+    for entry in raw_value.split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if "=" not in entry:
+            raise click.BadParameter(
+                "Each --tag-to-type mapping must be in the form tag=EVENT_TYPE"
+            )
+        tag, type_name = entry.split("=", 1)
+        tag = tag.strip()
+        type_name = type_name.strip().upper()
+        if not tag:
+            raise click.BadParameter(
+                "Tag must be provided for --tag-to-type mappings"
+            )
+        if type_name in {"NONE", "NULL"}:
+            mapping[tag] = None
+            continue
+        if not type_name:
+            raise click.BadParameter(
+                "Event type must be provided for --tag-to-type mappings"
+            )
+        try:
+            mapping[tag] = TaxRelatedEventType[type_name]
+        except KeyError:
+            valid_types = ", ".join(t.name for t in TaxRelatedEventType)
+            raise click.BadParameter(
+                f"Unknown TaxRelatedEventType '{type_name}'. Valid values: {valid_types}"
+            )
+    return mapping
+
+
 def get_platform_and_asset_type(
     account: str, platform_mapping: List[tuple[re.Pattern, str, Optional[AssetType]]]
 ) -> tuple[str, AssetType]:
@@ -178,7 +217,10 @@ def load_tax_config(entries, options, verbose: bool = False) -> TaxConfig:
 
 
 def generate_tax_related_events(
-    entries, options, verbose: bool = False
+    entries,
+    options,
+    verbose: bool = False,
+    tag_to_type: Optional[Dict[str, TaxRelatedEventType]] = None,
 ) -> List[TaxRelatedEvent]:
     """Generate tax related events from Beancount entries.
 
@@ -194,6 +236,10 @@ def generate_tax_related_events(
 
     transactions = [e for e in entries if isinstance(e, Transaction)]
 
+    effective_tag_to_type: Dict[str, Optional[TaxRelatedEventType]] = TAG_TO_TYPE.copy()
+    if tag_to_type:
+        effective_tag_to_type.update(tag_to_type)
+
     def convert_transaction(
         t: Transaction,
         config: TaxConfig,
@@ -202,7 +248,7 @@ def generate_tax_related_events(
         tag_found = None
         for tag in t.tags or []:
             mapped_tag = config.tag_mapping.get(tag, tag)
-            if mapped_tag in TAG_TO_TYPE:
+            if mapped_tag in effective_tag_to_type:
                 if tag_found:
                     assert False, "two matching tags"
                 tag_found = mapped_tag
@@ -214,7 +260,10 @@ def generate_tax_related_events(
             printer.print_entry(t)
             sys.stdout.flush()
 
-        type = TAG_TO_TYPE[tag_found]
+        mapped_type = effective_tag_to_type[tag_found]
+        if mapped_type is None:
+            return None
+        type = mapped_type
         quantity = 0
         commission = 0
         asset = None
@@ -343,6 +392,7 @@ def process_ledger(
     end_year: Optional[int] = None,
     hmrc_exchange_rates: Optional[str] = None,
     verbose: bool = False,
+    tag_to_type: Optional[Dict[str, TaxRelatedEventType]] = None,
 ) -> None:
     """Process a Beancount ledger file and generate a tax report.
 
@@ -361,7 +411,9 @@ def process_ledger(
         sys.stderr.flush()
 
     # Generate tax related events
-    tax_related_events = generate_tax_related_events(entries, options, verbose)
+    tax_related_events = generate_tax_related_events(
+        entries, options, verbose, tag_to_type=tag_to_type
+    )
 
     # Choose rate converter based on command line parameter
     rate_converter = (
@@ -402,9 +454,15 @@ def process_ledger(
 @click.option(
     "--hmrc-exchange-rates",
     type=str,
-    help="Path to HMRC exchange rates directory. If provided, uses HMRC rates instead of Beancount prices.",
+    help="Path to HMRC exchange rates directory. If provided, uses HMRC rates instead of Beancount prices (point to clone of https://github.com/matchilling/hmrc-exchange-rates or identical format)",
 )
 @click.option("--verbose", is_flag=True, help="Enable verbose debug output")
+@click.option(
+    "--tag-to-type",
+    type=str,
+    default=None,
+    help="Comma-separated tag=EVENT_TYPE pairs to override tag detection (EVENT_TYPE must be a TaxRelatedEventType member name).",
+)
 def main(
     ledger_file: str,
     output_file: str,
@@ -412,6 +470,7 @@ def main(
     end_year: Optional[int],
     hmrc_exchange_rates: Optional[str],
     verbose: bool,
+    tag_to_type: Optional[str],
 ) -> None:
     """Generate UK CGT tax report from Beancount ledger file.
 
@@ -422,8 +481,15 @@ def main(
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO, format="%(message)s"
     )
+    tag_to_type_mapping = parse_tag_to_type_option(tag_to_type)
     process_ledger(
-        ledger_file, output_file, start_year, end_year, hmrc_exchange_rates, verbose
+        ledger_file,
+        output_file,
+        start_year,
+        end_year,
+        hmrc_exchange_rates,
+        verbose,
+        tag_to_type=tag_to_type_mapping,
     )
 
 
