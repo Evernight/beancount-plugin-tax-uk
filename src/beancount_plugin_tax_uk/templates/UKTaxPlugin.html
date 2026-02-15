@@ -20,7 +20,7 @@
 
         {% for year in report.years %}
         <div class="year-section" id="year-{{ year }}" style="display: none;">
-            <h3>Tax Year {{ year - 1 }}/{{ year }}</h3>
+            <h3>Tax Year {{ year }}/{{ year + 1 }}</h3>
 
             <div class="summary-table">
                 <h4>Summary by Category</h4>
@@ -360,4 +360,4 @@ window.showYear = UKTaxPlugin.showYear;
 document.addEventListener('DOMContentLoaded', () => UKTaxPlugin.initializeTaxView());
 
 </script> -->
-{% endblock %} 
+{% endblock %}
